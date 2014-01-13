@@ -1,34 +1,4 @@
-import redis
-import os
-
-ALLOWED_HOSTS = "*"
-
-REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
-REDIS_PORT = int( os.environ.get('REDIS_PORT', 6379) ) 
-POSTGIS_HOST = os.environ.get('POSTGIS_HOST', 'localhost')
-POSTGIS_PORT = int( os.environ.get('POSGIS_PORT', 5432) )
-POSTGIS_DB = os.environ.get('POSTGIS_DB', 'docker')
-POSTGIS_PASSWORD = os.environ.get('POSTGIS_PASSWORD', 'docker')
-POSTGIS_USER = os.environ.get('POSTGIS_USER', 'docker')
-
-REDIS_CONNECTION = redis.Redis(
-    host=REDIS_HOST,
-    port=REDIS_PORT,
-    db=4)
-WMS_CACHE_DB = redis.Redis(
-    host=REDIS_HOST,
-    port=REDIS_PORT,
-    db=5)
-
-IPYTHON_SETTINGS=[]
-IPYTHON_BASE='/home/geoanalytics/ga_cms/static/media/ipython-notebook'
-IPYTHON_HOST='127.0.0.1'
-
-# celery settings
-BROKER_URL="redis://{REDIS_HOST}:6379/0".format(REDIS_HOST=REDIS_HOST)
-CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
-CARTO_HOME='/home/docker/node_modules/carto'
-
+from __future__ import absolute_import, unicode_literals
 
 ######################
 # MEZZANINE SETTINGS #
@@ -108,14 +78,11 @@ CARTO_HOME='/home/docker/node_modules/carto'
 # If True, the south application will be automatically added to the
 # INSTALLED_APPS setting.
 USE_SOUTH = True
-SITE_TITLE = "RENCI Geoanalytics"
 
 
 ########################
 # MAIN DJANGO SETTINGS #
 ########################
-
-ALLOWED_HOSTS = '*'
 
 # People who get code error notifications.
 # In the format (('Full Name', 'email@example.com'),
@@ -124,6 +91,10 @@ ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )
 MANAGERS = ADMINS
+
+# Hosts/domain names that are valid for this site; required if DEBUG is False
+# See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
+ALLOWED_HOSTS = []
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -141,10 +112,16 @@ USE_TZ = True
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = "en"
 
+# Supported languages
+_ = lambda s: s
+LANGUAGES = (
+    ('en', _('English')),
+)
+
 # A boolean that turns on/off debug mode. When set to ``True``, stack traces
 # are displayed for error pages. Should always be set to ``False`` in
 # production. Best set to ``True`` in local_settings.py
-DEBUG = True
+DEBUG = False
 
 # Whether a user's session cookie expires when the Web browser is closed.
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
@@ -154,9 +131,6 @@ SITE_ID = 1
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = False
-
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = "c1fa97ca-04b6-4b7c-87a4-650104f238ae2b767da8-f637-48ac-83d5-f1e2cf27b8b46ee0b7d6-f2d3-4ff5-a3cb-fcf1899bc7ab"
 
 # Tuple of IP addresses, as strings, that:
 #   * See debug comments, when DEBUG is true
@@ -179,6 +153,10 @@ STATICFILES_FINDERS = (
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
+# The numeric mode to set newly-uploaded files to. The value should be
+# a mode you'd pass directly to os.chmod.
+FILE_UPLOAD_PERMISSIONS = 0o644
+
 
 #############
 # DATABASES #
@@ -187,20 +165,19 @@ STATICFILES_FINDERS = (
 DATABASES = {
     "default": {
         # Add "postgresql_psycopg2", "mysql", "sqlite3" or "oracle".
-        "ENGINE": "django.contrib.gis.db.backends.postgis",
+        "ENGINE": "django.db.backends.",
         # DB name or path to database file if using sqlite3.
-        "NAME": POSTGIS_DB,
+        "NAME": "",
         # Not used with sqlite3.
-        "USER": POSTGIS_USER,
+        "USER": "",
         # Not used with sqlite3.
-        "PASSWORD": POSTGIS_PASSWORD,
+        "PASSWORD": "",
         # Set to empty string for localhost. Not used with sqlite3.
-        "HOST": POSTGIS_HOST,
+        "HOST": "",
         # Set to empty string for default. Not used with sqlite3.
-        "PORT": POSTGIS_PORT,
+        "PORT": "",
     }
 }
-POSTGIS_VERSION=(2,1,1)
 
 
 #########
@@ -239,11 +216,6 @@ MEDIA_URL = STATIC_URL + "media/"
 # Example: "/home/media/media.lawrence.com/media/"
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, *MEDIA_URL.strip("/").split("/"))
 
-# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
-# trailing slash.
-# Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = STATIC_URL + "grappelli/"
-
 # Package/module name to import the root urlpatterns from for the project.
 ROOT_URLCONF = "%s.urls" % PROJECT_DIRNAME
 
@@ -251,9 +223,7 @@ ROOT_URLCONF = "%s.urls" % PROJECT_DIRNAME
 # or "C:/www/django/templates".
 # Always use forward slashes, even on Windows.
 # Don't forget to use absolute paths, not relative paths.
-TEMPLATE_DIRS = (os.path.join(PROJECT_ROOT, "templates"),
-    "/opt/django/ga/lib/python2.7/site-packages/django/contrib/gis/templates"
-)
+TEMPLATE_DIRS = (os.path.join(PROJECT_ROOT, "templates"),)
 
 
 ################
@@ -264,7 +234,6 @@ INSTALLED_APPS = (
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
-    "django.contrib.gis",
     "django.contrib.redirects",
     "django.contrib.sessions",
     "django.contrib.sites",
@@ -281,15 +250,6 @@ INSTALLED_APPS = (
     #"mezzanine.twitter",
     "mezzanine.accounts",
     "mezzanine.mobile",
-    
-    "tastypie",
-    "djcelery",
-    "ga_home",
-    "ga_ows",
-    "ga_resources",
-    "ga_irods",
-    "ga_interactive",
-    "ga_home"
 )
 
 # List of processors used by RequestContext to populate the context.
@@ -313,12 +273,13 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 MIDDLEWARE_CLASSES = (
     "mezzanine.core.middleware.UpdateCacheMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.redirects.middleware.RedirectFallbackMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "mezzanine.core.request.CurrentRequestMiddleware",
+    "mezzanine.core.middleware.RedirectFallbackMiddleware",
     "mezzanine.core.middleware.TemplateForDeviceMiddleware",
     "mezzanine.core.middleware.TemplateForHostMiddleware",
     "mezzanine.core.middleware.AdminLoginInterfaceSelectorMiddleware",
@@ -370,6 +331,8 @@ DEBUG_TOOLBAR_CONFIG = {"INTERCEPT_REDIRECTS": False}
 #     "REPO_URL": "", # Git or Mercurial remote repo URL for the project
 #     "DB_PASS": "", # Live database password
 #     "ADMIN_PASS": "", # Live admin user password
+#     "SECRET_KEY": SECRET_KEY,
+#     "NEVERCACHE_KEY": NEVERCACHE_KEY,
 # }
 
 
@@ -380,15 +343,7 @@ DEBUG_TOOLBAR_CONFIG = {"INTERCEPT_REDIRECTS": False}
 # Allow any settings to be defined in local_settings.py which should be
 # ignored in your version control system allowing for settings to be
 # defined per machine.
-try:
-    from local_settings import *
-except ImportError:
-    pass
-
-try:
-    INSTALLED_APPS += SITE_APPS
-except NameError:
-    pass
+from local_settings import *
 
 
 ####################
@@ -407,3 +362,5 @@ except ImportError:
     pass
 else:
     set_dynamic_settings(globals())
+
+INSTALLED_APPS += HYDROSHARE_APPS

@@ -4,8 +4,8 @@
 service networking start
 service nginx start
 /usr/sbin/sshd
-cd /home/docker/geoanalytics
+cd /home/docker/hydroshare
 git pull
-export PYTHONPATH=/home/docker/geoanalytics
-su docker -c "PYTHONPATH=/home/docker celery worker -A geoanalytics -E -D"
-uwsgi --ini /home/docker/geoanalytics/uwsgi.ini
+export PYTHONPATH=/home/docker/hydroshare
+su docker -c "PYTHONPATH=/home/docker celery worker -A hydroshare -E -D"
+uwsgi --ini /home/docker/hydroshare/uwsgi.ini

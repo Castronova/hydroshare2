@@ -1,9 +1,11 @@
-from django.conf import settings
+from __future__ import unicode_literals
+
 from django.conf.urls import patterns, include, url
-from django.conf.urls.static import static
+from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
 
 from mezzanine.core.views import direct_to_template
+from mezzanine.conf import settings
 
 
 admin.autodiscover()
@@ -12,17 +14,23 @@ admin.autodiscover()
 # You can also change the ``home`` view to add your own functionality
 # to the project's homepage.
 
-urlpatterns = patterns("",
+urlpatterns = i18n_patterns("",
 
     # Change the admin prefix here to use an alternate URL for the
     # admin interface, which would be marginally more secure.
     url("^admin/", include(admin.site.urls)),
-
     url('^ga_resources/', include('ga_resources.urls')),
     url('^ga_interactive/', include('ga_interactive.urls')),
-    #url('^ga_irods/', include('ga_irods.urls')),
-    #url('^ga_ows/', include('ga_ows.urls')),
-    #url('^flower/', include('flower.urls')),
+)
+
+# Filebrowser admin media library.
+if getattr(settings, "PACKAGE_NAME_FILEBROWSER") in settings.INSTALLED_APPS:
+    urlpatterns += i18n_patterns("",
+        ("^admin/media-library/", include("%s.urls" %
+                                        settings.PACKAGE_NAME_FILEBROWSER)),
+    )
+
+urlpatterns += patterns('',
 
     # We don't want to presume how your homepage works, so here are a
     # few patterns you can use to set it up.
