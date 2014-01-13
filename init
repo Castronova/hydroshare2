@@ -1,8 +1,11 @@
 #!/bin/bash
 
 # docker init file. This will bring up all the services: celery, uwsgi, sshd, and nginx
+service networking start
 service nginx start
-/usr/bin/sshd
+/usr/sbin/sshd
+cd /home/docker/geoanalytics
+git pull
 export PYTHONPATH=/home/docker/geoanalytics
-su docker -c "celery worker -E -d"
+su docker -c "PYTHONPATH=/home/docker celery worker -A geoanalytics -E -D"
 uwsgi --ini /home/docker/geoanalytics/uwsgi.ini

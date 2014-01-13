@@ -284,7 +284,6 @@ INSTALLED_APPS = (
     
     "tastypie",
     "djcelery",
-    "ga_applications",
     "ga_home",
     "ga_ows",
     "ga_resources",
