@@ -67,11 +67,10 @@ POSTGIS_VERSION=(2,1,1)
 HYDROSHARE_APPS = (
     "tastypie",
     "djcelery",
-    "ga_home",
     "ga_ows",
     "ga_resources",
     "ga_irods",
     "ga_interactive",
-    "ga_home"
+    "hs_core"
 )
 
